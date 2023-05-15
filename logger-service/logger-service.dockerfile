@@ -2,6 +2,6 @@ FROM alpine:latest
 
 RUN mkdir /app
 
-COPY loggerApp.exe /app
+COPY loggerServiceApp /app
 
-CMD [ "/app/loggerApp.exe"]
+CMD [ "/app/loggerServiceApp"]

@@ -2,6 +2,6 @@ FROM alpine:latest
 
 RUN mkdir /app
 
-COPY authApp.exe /app
+COPY authApp /app
 
-CMD [ "/app/authApp.exe"]
+CMD [ "/app/authApp"]

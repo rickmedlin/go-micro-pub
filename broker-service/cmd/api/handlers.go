@@ -53,14 +53,11 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// logItem calls the logger microservice and sends back the appropriate response
 func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
-	// create some json we'll send to the logger microservice
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
 	logServiceURL := "http://logger-service/log"
 
-	// call the service
 	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		app.errorJSON(w, err)
@@ -76,7 +73,6 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 		app.errorJSON(w, err)
 		return
 	}
-
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusAccepted {
@@ -86,9 +82,10 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 
 	var payload jsonResponse
 	payload.Error = false
-	payload.Message = "Logged"
+	payload.Message = "logged"
 
 	app.writeJSON(w, http.StatusAccepted, payload)
+
 }
 
 // authenticate calls the authentication microservice and sends back the appropriate response
@@ -96,10 +93,8 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	// create some json we'll send to the auth microservice
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
-	authenticatorServiceURL := "http://authentication-service/authenticate"
-
 	// call the service
-	request, err := http.NewRequest("POST", authenticatorServiceURL, bytes.NewBuffer(jsonData))
+	request, err := http.NewRequest("POST", "http://authentication-service/authenticate", bytes.NewBuffer(jsonData))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -111,7 +106,6 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 		app.errorJSON(w, err)
 		return
 	}
-
 	defer response.Body.Close()
 
 	// make sure we get back the correct status code
@@ -140,7 +134,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 
 	var payload jsonResponse
 	payload.Error = false
-	payload.Message = "Authenticated"
+	payload.Message = "Authenticated!"
 	payload.Data = jsonFromService.Data
 
 	app.writeJSON(w, http.StatusAccepted, payload)
