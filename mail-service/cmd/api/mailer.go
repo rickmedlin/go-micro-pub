@@ -2,7 +2,8 @@ package main
 
 import (
 	"bytes"
-	"text/template"
+	"html/template"
+	"log"
 	"time"
 
 	"github.com/vanng822/go-premailer/premailer"
@@ -67,6 +68,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 	smtpClient, err := server.Connect()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -86,6 +88,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 	err = email.Send(smtpClient)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -150,7 +153,6 @@ func (m *Mail) inlineCSS(s string) (string, error) {
 	}
 
 	return html, nil
-
 }
 
 func (m *Mail) getEncryption(s string) mail.Encryption {
@@ -159,7 +161,7 @@ func (m *Mail) getEncryption(s string) mail.Encryption {
 		return mail.EncryptionSTARTTLS
 	case "ssl":
 		return mail.EncryptionSSLTLS
-	case "none":
+	case "none", "":
 		return mail.EncryptionNone
 	default:
 		return mail.EncryptionSTARTTLS
