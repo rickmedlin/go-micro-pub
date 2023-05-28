@@ -22,6 +22,7 @@ func (e *Emitter) setup() error {
 	return declareExchange(channel)
 }
 
+// push to the queue.
 func (e *Emitter) Push(event string, severity string) error {
 	channel, err := e.connection.Channel()
 	if err != nil {
