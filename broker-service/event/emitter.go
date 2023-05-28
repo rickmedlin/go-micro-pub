@@ -31,7 +31,6 @@ func (e *Emitter) Push(event string, severity string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	defer channel.Close()
 	log.Println("Pushing to channel")
 
 	err = channel.PublishWithContext(
