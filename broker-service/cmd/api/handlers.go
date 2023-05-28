@@ -203,6 +203,7 @@ func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LogPayload) {
 	app.writeJSON(w, http.StatusAccepted, rabbitPayload)
 }
 
+// pushes messages to queue
 func (app *Config) pushToQueue(name, msg string) error {
 	emitter, err := event.NewEventEmitter(app.Rabbit)
 	if err != nil {
