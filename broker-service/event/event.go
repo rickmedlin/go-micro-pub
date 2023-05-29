@@ -6,13 +6,13 @@ import (
 
 func declareExchange(ch *amqp.Channel) error {
 	return ch.ExchangeDeclare(
-		"logs_declare", // name
-		"topic",        // type
-		true,           // durable yn
-		false,          // auto delete yn
-		false,          // internal yn
-		false,          // no-wait yn
-		nil,            // arguments yn
+		"logs_topic", // name
+		"topic",      // type
+		true,         // durable yn
+		false,        // auto delete yn
+		false,        // internal yn
+		false,        // no-wait yn
+		nil,          // arguments yn
 
 	)
 }

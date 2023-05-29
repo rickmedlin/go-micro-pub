@@ -29,6 +29,8 @@ func (e *Emitter) Push(event string, severity string) error {
 		return err
 	}
 
+	defer channel.Close()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -36,7 +38,7 @@ func (e *Emitter) Push(event string, severity string) error {
 
 	err = channel.PublishWithContext(
 		ctx,
-		"logs-topic",
+		"logs_topic",
 		severity,
 		false,
 		false,
