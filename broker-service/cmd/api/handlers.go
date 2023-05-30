@@ -1,11 +1,11 @@
 package main
 
 import (
-	"broker/event"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/rpc"
 )
 
 type RequestPayload struct {
@@ -56,7 +56,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logEventViaRabbit(w, requestPayload.Log)
+		app.logEventViaRPC(w, requestPayload.Log)
 	case "mail":
 		app.SendMail(w, requestPayload.Mail)
 	default:
@@ -189,37 +189,68 @@ func (app *Config) SendMail(w http.ResponseWriter, msg MailPayload) {
 
 }
 
-func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LogPayload) {
-	err := app.pushToQueue(l.Name, l.Data)
+// func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LogPayload) {
+// 	err := app.pushToQueue(l.Name, l.Data)
+// 	if err != nil {
+// 		app.errorJSON(w, err)
+// 		return
+// 	}
+
+// 	var rabbitPayload jsonResponse
+// 	rabbitPayload.Error = false
+// 	rabbitPayload.Message = "Logged via RabbitMQ"
+
+// 	app.writeJSON(w, http.StatusAccepted, rabbitPayload)
+// }
+
+// pushes messages to queue
+// func (app *Config) pushToQueue(name, msg string) error {
+// 	emitter, err := event.NewEventEmitter(app.Rabbit)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	queuePayLoad := LogPayload{
+// 		Name: name,
+// 		Data: msg,
+// 	}
+
+// 	j, _ := json.MarshalIndent(&queuePayLoad, "", "\t")
+// 	err = emitter.Push(string(j), "log.INFO")
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }
+
+type RPCPayload struct {
+	Name string
+	Data string
+}
+
+func (app *Config) logEventViaRPC(w http.ResponseWriter, l LogPayload) {
+	client, err := rpc.Dial("tcp", "logger-service:5001")
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
-	var rabbitPayload jsonResponse
-	rabbitPayload.Error = false
-	rabbitPayload.Message = "Logged via RabbitMQ"
+	rpcPayload := RPCPayload{
+		Name: l.Name,
+		Data: l.Data,
+	}
 
-	app.writeJSON(w, http.StatusAccepted, rabbitPayload)
-}
-
-// pushes messages to queue
-func (app *Config) pushToQueue(name, msg string) error {
-	emitter, err := event.NewEventEmitter(app.Rabbit)
+	var result string
+	err = client.Call("RPCServer.LogInfo", rpcPayload, &result)
 	if err != nil {
-		return err
+		app.errorJSON(w, err)
+		return
 	}
 
-	queuePayLoad := LogPayload{
-		Name: name,
-		Data: msg,
+	rpcReturnPayload := jsonResponse{
+		Error:   false,
+		Message: result,
 	}
-
-	j, _ := json.MarshalIndent(&queuePayLoad, "", "\t")
-	err = emitter.Push(string(j), "log.INFO")
-	if err != nil {
-		return err
-	}
-
-	return nil
+	app.writeJSON(w, http.StatusAccepted, rpcReturnPayload)
 }
