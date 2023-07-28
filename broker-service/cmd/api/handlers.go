@@ -242,7 +242,7 @@ func (app *Config) logEventViaRPC(w http.ResponseWriter, l LogPayload) {
 		return
 	}
 
-	rpcPayload := RPCPayload{
+	rpcPayload := LogPayload{
 		Name: l.Name,
 		Data: l.Data,
 	}
