@@ -1,5 +1,4 @@
 SHELL=cmd.exe
-FRONT_END_BINARY=frontApp.exe
 BROKER_BINARY=brokerApp.exe
 AUTH_BINARY=authApp.exe
 LOGGER_BINARY=loggerServiceApp.exe
@@ -41,7 +40,7 @@ build_broker:
 
 ## build_logger: builds the logger binary as a linux executable
 build_logger:
-	@echo Building broker binary...
+	@echo Building logger binary...
 	chdir ..\logger-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${LOGGER_BINARY} ./cmd/api
 	@echo Done!
 
@@ -63,19 +62,13 @@ build_mail:
 	chdir ..\mail-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${MAIL_BINARY} ./cmd/api
 	@echo Done!
 
-## build_front: builds the frone end binary
-build_front:
-	@echo Building front end binary...
-	chdir ..\front-end && set CGO_ENABLED=0&& set GOOS=windows&& go build -o ${FRONT_END_BINARY} ./cmd/web
-	@echo Done!
-
 ## start: starts the front end
 start: build_front
 	@echo Starting front end
-	chdir ..\front-end && start /B ${FRONT_END_BINARY} &
+	chdir ..\front-end && start /B ${FRONT_BINARY} &
 
 ## stop: stop the front end
 stop:
 	@echo Stopping front end...
-	@taskkill /IM "${FRONT_END_BINARY}" /F
+	@taskkill /IM "${FRONT_BINARY}" /F
 	@echo "Stopped front end!"
