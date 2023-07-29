@@ -15,18 +15,18 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
 
   front-end:
-    image: medlinrick/front-end:1.0.1
-    deploy:
-      mode: replicated
-      replicas: 1
-
-  broker-service:
-    image: medlinrick/broker-service:1.0.1
+    image: medlinrick/front-end:1.0.3
     deploy:
       mode: replicated
       replicas: 1
     environment:
       BROKER_URL: "http://backend"
+
+  broker-service:
+    image: medlinrick/broker-service:1.0.3
+    deploy:
+      mode: replicated
+      replicas: 1
 
   listener-service:
     image: medlinrick/listener-service:1.0.0
@@ -35,7 +35,7 @@ services:
       replicas: 1
 
   authentication-service:
-    image: medlinrick/authentication-service:1.0.0
+    image: medlinrick/authentication-service:1.0.1
     deploy:
       mode: replicated
       replicas: 1
