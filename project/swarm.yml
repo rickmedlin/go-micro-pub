@@ -3,7 +3,7 @@ version: '3'
 services:
 
   caddy:
-    image: medlinrick/micro-caddy:1.0.0
+    image: medlinrick/micro-caddy:1.0.1
     deploy:
       mode: replicated
       replicas: 1
@@ -12,10 +12,10 @@ services:
       - "443:443"
     volumes:
       - caddy_data:/data
-      - caddy_config/config
+      - ./Caddyfile:/etc/caddy/Caddyfile
 
   front-end:
-    image: medlinrick/front-end:1.0.0
+    image: medlinrick/front-end:1.0.1
     deploy:
       mode: replicated
       replicas: 1
@@ -25,6 +25,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    environment:
+      BROKER_URL: "http://backend"
 
   listener-service:
     image: medlinrick/listener-service:1.0.0

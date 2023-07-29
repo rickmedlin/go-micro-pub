@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -34,9 +35,9 @@ func render(w http.ResponseWriter, t string) {
 	var templateSlice []string
 	templateSlice = append(templateSlice, fmt.Sprintf("templates/%s", t))
 
-	for _, x := range partials {
-		templateSlice = append(templateSlice, x)
-	}
+	//for _, x := range partials {
+	templateSlice = append(templateSlice, partials...)
+	//}
 
 	tmpl, err := template.ParseFS(templateFS, templateSlice...)
 	if err != nil {
@@ -44,7 +45,13 @@ func render(w http.ResponseWriter, t string) {
 		return
 	}
 
-	if err := tmpl.Execute(w, nil); err != nil {
+	var dataTemplate struct {
+		BrokerURL string
+	}
+
+	dataTemplate.BrokerURL = os.Getenv("BROKER_URL")
+
+	if err := tmpl.Execute(w, dataTemplate); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
