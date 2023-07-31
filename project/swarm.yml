@@ -35,7 +35,7 @@ services:
       replicas: 1
 
   authentication-service:
-    image: medlinrick/authentication-service:1.0.1
+    image: medlinrick/authentication-service:1.0.2
     deploy:
       mode: replicated
       replicas: 1
@@ -43,7 +43,7 @@ services:
       DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
 
   logger-service:
-    image: medlinrick/logger-service:1.0.1
+    image: medlinrick/logger-service:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -89,7 +89,7 @@ services:
       - ./db-data/mongo/:/data/db
 
   postgres:
-    image: 'postgres:14.0'
+    image: 'postgres:14.2'
     ports:
       - "5432:5432"
     deploy:
